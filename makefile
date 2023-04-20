@@ -211,21 +211,9 @@ dev-down:
 # ------------------------------------------------------------------------------
 
 dev-load:
-	cd zarf/k8s/dev/sales; kustomize edit set image sales-api-image=sales-api:$(VERSION)
 	kind load docker-image sales-api:$(VERSION) --name $(KIND_CLUSTER)
 
-	cd zarf/k8s/dev/sales; kustomize edit set image metrics-image=metrics:$(VERSION)
-	kind load docker-image metrics:$(VERSION) --name $(KIND_CLUSTER)
-
 dev-apply:
-	kustomize build zarf/k8s/dev/vault | kubectl apply -f -
-
-	kustomize build zarf/k8s/dev/database | kubectl apply -f -
-	kubectl wait pods --namespace=sales-system --selector app=database --for=condition=Ready
-	
-	kustomize build zarf/k8s/dev/zipkin | kubectl apply -f -
-	kubectl wait --timeout=120s --namespace=sales-system --for=condition=Available deployment/zipkin
-	
 	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
 	kubectl wait --timeout=120s --namespace=sales-system --for=condition=Available deployment/sales
 
