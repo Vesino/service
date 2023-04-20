@@ -161,7 +161,7 @@ dev-gotooling:
 # Example: $(shell git rev-parse --short HEAD)
 VERSION := 1.0
 
-all: sales metrics
+all: sales
 
 sales:
 	docker build \
@@ -171,18 +171,10 @@ sales:
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		.
 
-metrics:
-	docker build \
-		-f zarf/docker/dockerfile.metrics \
-		-t metrics:$(VERSION) \
-		--build-arg BUILD_REF=$(VERSION) \
-		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-		.
-
 # ==============================================================================
 # Running from within k8s/kind
 
-KIND_CLUSTER := ardan-starter-cluster
+KIND_CLUSTER := vesino-starter-cluster
 
 dev-up-local:
 	kind create cluster \

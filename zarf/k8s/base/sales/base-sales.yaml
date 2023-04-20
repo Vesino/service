@@ -1,9 +1,8 @@
-apiversion: v1 
-kind: Namespace 
-metadata:   
-  name: sales-system 
---- 
-
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sales-system
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,5 +19,5 @@ spec:
     spec:
       terminationGracePeriodSeconds: 60
       containers:
-      - name: sales-api         
+      - name: sales-api
         image: sales-api-image
