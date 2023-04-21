@@ -212,6 +212,7 @@ dev-apply:
 dev-restart:
 	kubectl rollout restart deployment sales --namespace=sales-system
 
+# code changes
 dev-update: all dev-load dev-restart
 
 dev-update-apply: all dev-load dev-apply
@@ -219,7 +220,7 @@ dev-update-apply: all dev-load dev-apply
 # ------------------------------------------------------------------------------
 
 dev-logs:
-	kubectl logs --namespace=sales-system -l app=sales --all-containers=true -f --tail=100 --max-log-requests=6 | go run app/tooling/logfmt/main.go -service=SALES-API
+	kubectl logs --namespace=sales-system -l app=sales --all-containers=true -f --tail=100 --max-log-requests=6
 
 dev-logs-init:
 	kubectl logs --namespace=sales-system -l app=sales -f --tail=100 -c init-vault-system
@@ -227,6 +228,7 @@ dev-logs-init:
 	kubectl logs --namespace=sales-system -l app=sales -f --tail=100 -c init-migrate
 	kubectl logs --namespace=sales-system -l app=sales -f --tail=100 -c init-seed
 
+# Whatch the cluster
 dev-status:
 	kubectl get nodes -o wide
 	kubectl get svc -o wide
