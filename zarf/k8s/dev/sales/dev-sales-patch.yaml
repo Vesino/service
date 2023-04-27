@@ -18,12 +18,12 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       containers:
-      - name: sales-api
-        resources:
-          limits:
-            cpu: "2000m" # Up to 2 full cores
-          requests:
-            cpu: "1000m" # Use 1 full cores
+        - name: sales-api
+          resources:
+            limits:
+              cpu: 2000m
+            requests:
+              cpu: 1000m
 ---
 apiVersion: v1
 kind: Service
@@ -35,9 +35,9 @@ spec:
     app: sales
   type: ClusterIP
   ports:
-  - name: sales-api
-    port: 3000
-    targetPort: sales-api
-  - name: sales-api-debug
-    port: 4000
-    targetPort: sales-api-debug
+    - name: sales-api
+      port: 3000
+      targetPort: sales-api
+    - name: sales-api-debug
+      port: 4000
+      targetPort: sales-api-debug
