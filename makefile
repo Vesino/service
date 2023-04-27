@@ -176,6 +176,12 @@ sales:
 
 KIND_CLUSTER := vesino-starter-cluster
 
+
+dev-tel:
+	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
+	telepresence --context=kind-$(KIND_CLUSTER) helm install
+	telepresence --context=kind-$(KIND_CLUSTER) connect
+
 dev-up-local:
 	kind create cluster \
 		--image kindest/node:v1.26.3@sha256:61b92f38dff6ccc29969e7aa154d34e38b89443af1a2c14e6cfbd2df6419c66f \
