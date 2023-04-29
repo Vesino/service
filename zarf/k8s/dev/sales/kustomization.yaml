@@ -6,5 +6,5 @@ images:
 - name: sales-api-image
   newName: sales-api
   newTag: "1.0"
-patches:
-- path: ./dev-sales-patch.yaml
+patchesStrategicMerge:
+- ./dev-sales-patch.yaml
