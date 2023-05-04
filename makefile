@@ -102,6 +102,9 @@ dev-describe-deployment:
 dev-describe-sales:
 	kubectl describe pod --namespace=sales-system -l app=sales
 
+dev-describe-tel:
+	kubectl describe pod --namespace=ambassador -l app=traffic-manager
+
 # for changes in code
 dev-update: all dev-load dev-restart
 
