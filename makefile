@@ -52,6 +52,9 @@ TELEPRESENCE := docker.io/datawire/tel2:2.10.4
 
 KIND_CLUSTER := ardan-starter-cluster
 
+status:
+	curl -il sales-service.sales-system.svc.cluster.local:3000/status
+
 dev-kind:
 	kind create cluster \
 		--image kindest/node:v1.25.3@sha256:f52781bc0d7a19fb6c405c2af83abfeb311f130707a0e219175677e366cc45d1 \
