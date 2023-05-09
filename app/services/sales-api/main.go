@@ -19,6 +19,10 @@ import (
 	"go.uber.org/zap"
 )
 
+/*
+	Need to figure out timeouts for http service.
+*/
+
 var build = "develop"
 
 func main() {
@@ -103,6 +107,9 @@ func run(log *zap.SugaredLogger) error {
 	}()
 
 	// =========================================================================
+	// Start API Service
+
+	log.Infow("startup", "status", "initializing V1 API support")
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
