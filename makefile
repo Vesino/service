@@ -3,6 +3,7 @@
 # Other commands to install.
 # go install github.com/divan/expvarmon@latest
 #
+# go install github.com/rakyll/hey@latest
 # http://sales-service.sales-system.svc.cluster.local:4000/debug/pprof
 # curl -il sales-service.sales-system.svc.cluster.local:4000/debug/vars
 # curl -il sales-service.sales-system.svc.cluster.local:3000/status
@@ -28,6 +29,12 @@ metrics-local:
 
 metrics-view:
 	expvarmon -ports="sales-service.sales-system.svc.cluster.local:4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+
+test-load-local:
+	hey -m GET -c 100 -n 10000 http://localhost:3000/status
+
+test-load:
+	hey -m GET -c 100 -n 10000 http://sales-service.sales-system.svc.cluster.local:3000/status
 
 # ==============================================================================
 # Building containers
