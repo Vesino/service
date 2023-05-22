@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -45,4 +48,61 @@ func New(cfg Config) (*Auth, error) {
 		cache:     make(map[string]string),
 	}
 	return &a, nil
+}
+
+// GenerateToken generates a signed JWT token string representing the user Claims.
+func (a *Auth) GenerateToken(kid string, claims Claims) (string, error) {
+	token := jwt.NewWithClaims(a.method, claims)
+	token.Header["kid"] = kid
+
+	privateKeyPEM, err := a.keyLookup.PrivateKeyPEM(kid)
+	if err != nil {
+		return "", fmt.Errorf("private key: %w", err)
+	}
+
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKeyPEM))
+	if err != nil {
+		return "", fmt.Errorf("parsing private pem: %w", err)
+	}
+
+	str, err := token.SignedString(privateKey)
+	if err != nil {
+		return "", fmt.Errorf("signing token: %w", err)
+	}
+
+	return str, nil
+}
+
+// Authenticate processes the token to validate the sender's token is valid.
+func (a *Auth) Authenticate(ctx context.Context, bearerToken string) (Claims, error) {
+	parts := strings.Split(bearerToken, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		return Claims{}, errors.New("expected authorization header format: Bearer <token>")
+	}
+
+	keyFunc := func(token *jwt.Token) (interface{}, error) {
+		kid, exists := token.Header["kid"]
+		if !exists {
+			return nil, errors.New("kid not in header")
+		}
+
+		pem, err := a.keyLookup.PublicKeyPEM(kid.(string))
+		if err != nil {
+			return nil, err
+		}
+
+		publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(pem))
+		if err != nil {
+			return "", fmt.Errorf("parsing public pem: %w", err)
+		}
+
+		return publicKey, nil
+	}
+
+	var claims Claims
+	if _, err := a.parser.ParseWithClaims(parts[1], &claims, keyFunc); err != nil {
+		return Claims{}, fmt.Errorf("parse with claims: %w", err)
+	}
+
+	return claims, nil
 }
