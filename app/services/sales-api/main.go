@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/Vesino/service/app/services/sales-api/handlers"
+	"github.com/Vesino/service/business/web/auth"
+	"github.com/Vesino/service/business/web/keystore"
 	"github.com/Vesino/service/business/web/v1/debug"
 	"github.com/Vesino/service/foundation/logger"
 	"github.com/ardanlabs/conf/v3"
@@ -101,6 +103,23 @@ func run(log *zap.SugaredLogger) error {
 	log.Infow("startup", "config", out)
 
 	// =========================================================================
+	// Initialize authentication support
+
+	keyStore, err := keystore.New()
+	if err != nil {
+		return fmt.Errorf("constructing keystore: %w", err)
+	}
+
+	authCfg := auth.Config{
+		Log:       log,
+		KeyLookup: keyStore,
+	}
+
+	auth, err := auth.New(authCfg)
+	if err != nil {
+		return fmt.Errorf("constructing auth: %w", err)
+	}
+	// =========================================================================
 	// Start Debug Service
 
 	log.Infow("startup", "status", "debug v1 router started", "host", cfg.Web.DebugHost)
@@ -122,6 +141,7 @@ func run(log *zap.SugaredLogger) error {
 	apiMux := handlers.APIMux(handlers.APIMuxConfig{
 		Shutdown: shutdown,
 		Log:      log,
+		Auth:     auth,
 	})
 
 	api := http.Server{
