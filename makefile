@@ -2,12 +2,12 @@
 #
 # Other commands to install.
 # go install github.com/divan/expvarmon@latest
-#
 # go install github.com/rakyll/hey@latest
+#
 # http://sales-service.sales-system.svc.cluster.local:4000/debug/pprof
 # curl -il sales-service.sales-system.svc.cluster.local:4000/debug/vars
 # curl -il sales-service.sales-system.svc.cluster.local:3000/status
-
+#
 # RSA Keys
 # 	To generate a private/public key PEM file.
 # 	$ openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
@@ -15,6 +15,12 @@
 
 jwt:
 	go run app/scratch/jwt/main.go
+
+auth:
+	curl -il -H "Authorization: Bearer ${TOKEN}" sales-service.sales-system.svc.cluster.local:3000/auth
+
+auth-local:
+	curl -il -H "Authorization: Bearer ${TOKEN}" localhost:3000/auth
 
 status:
 	curl -il sales-service.sales-system.svc.cluster.local:3000/status
@@ -106,8 +112,8 @@ dev-load:
 	kind load docker-image sales-api:$(VERSION) --name $(KIND_CLUSTER)
 
 dev-apply:
-	kustomize build zarf/k8s/dev/vault | kubectl apply -f -
-	
+	# kustomize build zarf/k8s/dev/vault | kubectl apply -f -
+
 	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
 	kubectl wait --timeout=120s --namespace=sales-system --for=condition=Available deployment/sales
 
@@ -130,7 +136,6 @@ dev-describe-sales:
 dev-describe-tel:
 	kubectl describe pod --namespace=ambassador -l app=traffic-manager
 
-# for changes in code
 dev-update: all dev-load dev-restart
 
 dev-update-apply: all dev-load dev-apply
